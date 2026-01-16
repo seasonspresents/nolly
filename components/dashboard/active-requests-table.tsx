@@ -80,7 +80,8 @@ export function ActiveRequestsTable() {
         </Button>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="overflow-x-auto">
+        {/* Desktop table view */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-border">
@@ -165,6 +166,62 @@ export function ActiveRequestsTable() {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile card view */}
+        <div className="md:hidden divide-y divide-border">
+          {requests.map((request) => (
+            <div key={request.id} className="p-4 space-y-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={request.person.avatar || "/placeholder.svg"} />
+                    <AvatarFallback>
+                      {request.person.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">{request.person.name}</span>
+                    <span className="text-xs text-muted-foreground">{request.person.role}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                    <Link href={`/capture/${request.id}`}>
+                      <Eye className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Bell className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium">{request.topic}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge variant="outline" className={`text-xs ${typeColors[request.type]}`}>
+                    {request.type}
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">Due {request.dueDate}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Progress value={request.progress} className="h-2 flex-1" />
+                <span className="text-xs text-muted-foreground">{request.progress}%</span>
+                {request.incentive && (
+                  <Badge variant="secondary" className="gap-1 text-xs bg-chart-4/10 text-chart-4 border-chart-4/20">
+                    <DollarSign className="h-3 w-3" />
+                    {request.incentive}
+                  </Badge>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </CardContent>
     </Card>

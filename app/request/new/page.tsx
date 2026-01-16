@@ -144,14 +144,14 @@ export default function NewRequestPage() {
         </div>
 
         {/* Progress Steps */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+        <div className="mb-8 overflow-x-auto">
+          <div className="flex items-center justify-between min-w-[320px]">
             {steps.map((step, index) => (
               <div key={step.id} className="flex items-center">
                 <div className="flex flex-col items-center">
                   <div
                     className={cn(
-                      "flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-medium transition-colors",
+                      "flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full border-2 text-xs sm:text-sm font-medium transition-colors",
                       currentStep > step.id
                         ? "border-primary bg-primary text-primary-foreground"
                         : currentStep === step.id
@@ -159,11 +159,11 @@ export default function NewRequestPage() {
                           : "border-border text-muted-foreground",
                     )}
                   >
-                    {currentStep > step.id ? <Check className="h-5 w-5" /> : step.id}
+                    {currentStep > step.id ? <Check className="h-4 w-4 sm:h-5 sm:w-5" /> : step.id}
                   </div>
                   <span
                     className={cn(
-                      "mt-2 text-xs font-medium",
+                      "mt-2 text-[10px] sm:text-xs font-medium text-center max-w-[60px] sm:max-w-none",
                       currentStep >= step.id ? "text-foreground" : "text-muted-foreground",
                     )}
                   >
@@ -171,7 +171,7 @@ export default function NewRequestPage() {
                   </span>
                 </div>
                 {index < steps.length - 1 && (
-                  <div className={cn("mx-4 h-0.5 w-12 sm:w-24", currentStep > step.id ? "bg-primary" : "bg-border")} />
+                  <div className={cn("mx-2 sm:mx-4 h-0.5 w-6 sm:w-16 lg:w-24", currentStep > step.id ? "bg-primary" : "bg-border")} />
                 )}
               </div>
             ))}
