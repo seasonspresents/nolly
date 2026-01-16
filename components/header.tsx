@@ -3,11 +3,11 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Moon, Sun, User, Menu, X, LogOut, Settings } from "lucide-react"
+import { Moon, Sun, User, Menu, X, LogOut, Settings, Check } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 
 const navigation = [
@@ -20,9 +20,10 @@ export function Header() {
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [themeSheetOpen, setThemeSheetOpen] = useState(false)
+  const [profileSheetOpen, setProfileSheetOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
 
-  // Avoid hydration mismatch
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -66,8 +67,9 @@ export function Header() {
           </nav>
         </div>
         <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          {/* Theme Toggle Sheet */}
+          <Sheet open={themeSheetOpen} onOpenChange={setThemeSheetOpen}>
+            <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="h-9 w-9">
                 {mounted && theme === "dark" ? (
                   <Moon className="h-4 w-4" />
@@ -76,23 +78,54 @@ export function Header() {
                 )}
                 <span className="sr-only">Toggle theme</span>
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setTheme("light")}>
-                <Sun className="h-4 w-4 mr-2" />
-                Light
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("dark")}>
-                <Moon className="h-4 w-4 mr-2" />
-                Dark
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("system")}>
-                System
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="h-auto">
+              <SheetHeader>
+                <SheetTitle>Theme</SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col gap-2 p-4">
+                <Button
+                  variant={mounted && theme === "light" ? "default" : "outline"}
+                  className="justify-start gap-3"
+                  onClick={() => {
+                    setTheme("light")
+                    setThemeSheetOpen(false)
+                  }}
+                >
+                  <Sun className="h-4 w-4" />
+                  Light
+                  {mounted && theme === "light" && <Check className="h-4 w-4 ml-auto" />}
+                </Button>
+                <Button
+                  variant={mounted && theme === "dark" ? "default" : "outline"}
+                  className="justify-start gap-3"
+                  onClick={() => {
+                    setTheme("dark")
+                    setThemeSheetOpen(false)
+                  }}
+                >
+                  <Moon className="h-4 w-4" />
+                  Dark
+                  {mounted && theme === "dark" && <Check className="h-4 w-4 ml-auto" />}
+                </Button>
+                <Button
+                  variant={mounted && theme === "system" ? "default" : "outline"}
+                  className="justify-start gap-3"
+                  onClick={() => {
+                    setTheme("system")
+                    setThemeSheetOpen(false)
+                  }}
+                >
+                  System
+                  {mounted && theme === "system" && <Check className="h-4 w-4 ml-auto" />}
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
+
+          {/* Profile Sheet */}
+          <Sheet open={profileSheetOpen} onOpenChange={setProfileSheetOpen}>
+            <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="/professional-headshot.png" />
@@ -101,25 +134,38 @@ export function Header() {
                   </AvatarFallback>
                 </Avatar>
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem asChild>
-                <Link href="/settings" className="flex items-center">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive focus:text-destructive">
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="h-auto">
+              <SheetHeader>
+                <SheetTitle>Account</SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col gap-2 p-4">
+                <Button
+                  variant="outline"
+                  className="justify-start gap-3"
+                  asChild
+                  onClick={() => setProfileSheetOpen(false)}
+                >
+                  <Link href="/settings">
+                    <Settings className="h-4 w-4" />
+                    Settings
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="justify-start gap-3 text-destructive hover:text-destructive"
+                  onClick={() => setProfileSheetOpen(false)}
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign out
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile navigation menu */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border bg-background">
           <nav className="container px-4 py-4 flex flex-col gap-2">
@@ -138,29 +184,6 @@ export function Header() {
                 {item.name}
               </Link>
             ))}
-            <div className="border-t border-border mt-2 pt-4">
-              <p className="px-4 text-xs font-medium text-muted-foreground mb-2">Theme</p>
-              <div className="flex gap-2 px-4">
-                <Button
-                  variant={mounted && theme === "light" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setTheme("light")}
-                  className="flex-1"
-                >
-                  <Sun className="h-4 w-4 mr-2" />
-                  Light
-                </Button>
-                <Button
-                  variant={mounted && theme === "dark" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setTheme("dark")}
-                  className="flex-1"
-                >
-                  <Moon className="h-4 w-4 mr-2" />
-                  Dark
-                </Button>
-              </div>
-            </div>
           </nav>
         </div>
       )}
