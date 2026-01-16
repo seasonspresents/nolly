@@ -11,6 +11,7 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Nolly - AI-Powered Knowledge Transfer",
   description: "Capture and preserve institutional knowledge. Talk to the person who left.",
+    generator: 'v0.app'
 }
 
 export default function RootLayout({
